@@ -1,9 +1,6 @@
-from typing import Union
 from uuid import UUID
 
-from sqlalchemy import and_
-from sqlalchemy import select
-from sqlalchemy import update
+from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import User
@@ -14,16 +11,16 @@ class UserDAL:
         self.db_session = db_session
 
     async def create_user(
-        self, name: str, surname: str, email: str, hashed_password: str
+        self, name: str, surname: str, email: str, hashed_password: str,
     ) -> User:
         new_user = User(
-            name=name, surname=surname, email=email, hashed_password=hashed_password
+            name=name, surname=surname, email=email, hashed_password=hashed_password,
         )
         self.db_session.add(new_user)
         await self.db_session.flush()
         return new_user
 
-    async def delete_user(self, user_id: UUID) -> Union[UUID, None]:
+    async def delete_user(self, user_id: UUID) -> UUID | None:
         query = (
             update(User)
             .where(and_(User.user_id == user_id, User.is_active == True))
@@ -42,7 +39,7 @@ class UserDAL:
         if user_row is not None:
             return user_row[0]
 
-    async def update_user(self, user_id: UUID, **kwargs) -> Union[UUID, None]:
+    async def update_user(self, user_id: UUID, **kwargs) -> UUID | None:
         query = (
             update(User)
             .where(and_(User.user_id == user_id, User.is_active == True))
