@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models import User
 
+
 ###########################################################
 # BLOCK FOR INTERACTION WITH DATABASE IN BUSINESS CONTEXT #
 ###########################################################
@@ -29,7 +30,7 @@ class UserDAL:
     async def delete_user(self, user_id: UUID) -> UUID | None:
         query = (
             update(User)
-            .where(and_(User.user_id == user_id, User.is_active is True))
+            .where(and_(User.user_id == user_id, User.is_active == True))
             .values(is_active=False)
             .returning(User.user_id)
         )
@@ -55,7 +56,7 @@ class UserDAL:
     async def update_user(self, user_id: UUID, **kwargs) -> UUID | None:
         query = (
             update(User)
-            .where(and_(User.user_id == user_id, User.is_active is True))
+            .where(and_(User.user_id == user_id, User.is_active == True))
             .values(kwargs)
             .returning(User.user_id)
         )

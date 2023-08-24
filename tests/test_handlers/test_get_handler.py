@@ -27,7 +27,7 @@ async def test_get_user(client, create_user_in_database, get_user_from_database)
 
 
 async def test_get_user_id_validation_error(
-    client, create_user_in_database, get_user_from_database,
+        client, create_user_in_database, get_user_from_database,
 ):
     user_data = {
         'user_id': uuid4(),
@@ -44,19 +44,15 @@ async def test_get_user_id_validation_error(
     )
     assert resp.status_code == 422
     data_from_response = resp.json()
-    assert data_from_response == {
-        'detail': [
-            {
-                'loc': ['query', 'user_id'],
-                'msg': 'value is not a valid uuid',
-                'type': 'type_error.uuid',
-            },
-        ],
-    }
+    assert data_from_response == {'detail': [{'type': 'uuid_parsing', 'loc': ['query', 'user_id'],
+                                              'msg': 'Input should be a valid UUID, invalid length: expected length 32 for simple format, found 3',
+                                              'input': '123', 'ctx': {
+            'error': 'invalid length: expected length 32 for simple format, found 3'},
+                                              'url': 'https://errors.pydantic.dev/2.3/v/uuid_parsing'}]}
 
 
 async def test_get_user_not_found(
-    client, create_user_in_database, get_user_from_database,
+        client, create_user_in_database, get_user_from_database,
 ):
     user_data = {
         'user_id': uuid4(),
@@ -77,7 +73,7 @@ async def test_get_user_not_found(
 
 
 async def test_get_user_unauth_error(
-    client, create_user_in_database, get_user_from_database,
+        client, create_user_in_database, get_user_from_database,
 ):
     user_data = {
         'user_id': uuid4(),

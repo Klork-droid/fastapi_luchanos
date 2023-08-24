@@ -58,72 +58,69 @@ async def test_create_user_duplicate_email_error(client, get_user_from_database)
     resp = client.post('/user/', data=json.dumps(user_data_same))
     assert resp.status_code == 503
     assert (
-        'duplicate key value violates unique constraint "users_email_key"'
-        in resp.json()['detail']
+            'duplicate key value violates unique constraint "users_email_key"'
+            in resp.json()['detail']
     )
+
+
 @pytest.mark.parametrize(
     'user_data_for_creation, expected_status_code, expected_detail',
     [
         (
-            {},
-            422,
-            {
-                'detail': [
-                    {
-                        'loc': ['body', 'name'],
-                        'msg': 'field required',
-                        'type': 'value_error.missing',
-                    },
-                    {
-                        'loc': ['body', 'surname'],
-                        'msg': 'field required',
-                        'type': 'value_error.missing',
-                    },
-                    {
-                        'loc': ['body', 'email'],
-                        'msg': 'field required',
-                        'type': 'value_error.missing',
-                    },
-                    {
-                        'loc': ['body', 'password'],
-                        'msg': 'field required',
-                        'type': 'value_error.missing',
-                    },
-                ],
-            },
+                {},
+                422,
+                {'detail': [{'type': 'missing', 'loc': ['body', 'name'], 'msg': 'Field required', 'input': {},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'},
+                            {'type': 'missing', 'loc': ['body', 'surname'], 'msg': 'Field required', 'input': {},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'},
+                            {'type': 'missing', 'loc': ['body', 'email'], 'msg': 'Field required', 'input': {},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'},
+                            {'type': 'missing', 'loc': ['body', 'password'], 'msg': 'Field required', 'input': {},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'}]},
         ),
         (
-            {'name': 123, 'surname': 456, 'email': 'lol'},
-            422,
-            {'detail': 'Name should contains only letters'},
+                {'name': 123, 'surname': 456, 'email': 'lol'},
+                422,
+                {'detail': [{'type': 'string_type', 'loc': ['body', 'name'], 'msg': 'Input should be a valid string',
+                             'input': 123, 'url': 'https://errors.pydantic.dev/2.3/v/string_type'},
+                            {'type': 'string_type', 'loc': ['body', 'surname'], 'msg': 'Input should be a valid string',
+                             'input': 456, 'url': 'https://errors.pydantic.dev/2.3/v/string_type'},
+                            {'type': 'value_error', 'loc': ['body', 'email'],
+                             'msg': 'value is not a valid email address: The email address is not valid. It must have exactly one @-sign.',
+                             'input': 'lol',
+                             'ctx': {'reason': 'The email address is not valid. It must have exactly one @-sign.'}},
+                            {'type': 'missing', 'loc': ['body', 'password'], 'msg': 'Field required',
+                             'input': {'name': 123, 'surname': 456, 'email': 'lol'},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'}]},
         ),
         (
-            {'name': 'Nikolai', 'surname': 456, 'email': 'lol'},
-            422,
-            {'detail': 'Surname should contains only letters'},
+                {'name': 'Nikolai', 'surname': 456, 'email': 'lol'},
+                422,
+                {'detail': [{'type': 'string_type', 'loc': ['body', 'surname'], 'msg': 'Input should be a valid string',
+                             'input': 456, 'url': 'https://errors.pydantic.dev/2.3/v/string_type'},
+                            {'type': 'value_error', 'loc': ['body', 'email'],
+                             'msg': 'value is not a valid email address: The email address is not valid. It must have exactly one @-sign.',
+                             'input': 'lol',
+                             'ctx': {'reason': 'The email address is not valid. It must have exactly one @-sign.'}},
+                            {'type': 'missing', 'loc': ['body', 'password'], 'msg': 'Field required',
+                             'input': {'name': 'Nikolai', 'surname': 456, 'email': 'lol'},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'}]},
         ),
         (
-            {'name': 'Nikolai', 'surname': 'Sviridov', 'email': 'lol'},
-            422,
-            {
-                'detail': [
-                    {
-                        'loc': ['body', 'email'],
-                        'msg': 'value is not a valid email address',
-                        'type': 'value_error.email',
-                    },
-                    {
-                        'loc': ['body', 'password'],
-                        'msg': 'field required',
-                        'type': 'value_error.missing',
-                    },
-                ],
-            },
+                {'name': 'Nikolai', 'surname': 'Sviridov', 'email': 'lol'},
+                422,
+                {'detail': [{'type': 'value_error', 'loc': ['body', 'email'],
+                             'msg': 'value is not a valid email address: The email address is not valid. It must have exactly one @-sign.',
+                             'input': 'lol',
+                             'ctx': {'reason': 'The email address is not valid. It must have exactly one @-sign.'}},
+                            {'type': 'missing', 'loc': ['body', 'password'], 'msg': 'Field required',
+                             'input': {'name': 'Nikolai', 'surname': 'Sviridov', 'email': 'lol'},
+                             'url': 'https://errors.pydantic.dev/2.3/v/missing'}]},
         ),
     ],
 )
 async def test_create_user_validation_error(
-    client, user_data_for_creation, expected_status_code, expected_detail,
+        client, user_data_for_creation, expected_status_code, expected_detail,
 ):
     resp = client.post('/user/', data=json.dumps(user_data_for_creation))
     data_from_resp = resp.json()
