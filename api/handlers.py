@@ -66,7 +66,7 @@ async def update_user_by_id(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user_from_token),
 ) -> UpdatedUserResponse:
-    updated_user_params = body.dict(exclude_none=True)
+    updated_user_params = body.model_dump(exclude_none=True)
     if updated_user_params == {}:
         raise HTTPException(
             status_code=422,

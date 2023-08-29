@@ -7,8 +7,7 @@ from typing import Any
 import asyncpg
 import pytest
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from starlette.testclient import TestClient
 
 import settings
@@ -38,7 +37,7 @@ async def run_migrations():
 @pytest.fixture(scope='session')
 async def async_session_test():
     engine = create_async_engine(settings.TEST_DATABASE_URL, future=True, echo=True)
-    async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+    async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     yield async_session
 
 
@@ -59,7 +58,7 @@ async def _get_test_db():
         )
 
         # create session for the interaction with database
-        test_async_session = sessionmaker(
+        test_async_session = async_sessionmaker(
             test_engine, expire_on_commit=False, class_=AsyncSession,
         )
         yield test_async_session()

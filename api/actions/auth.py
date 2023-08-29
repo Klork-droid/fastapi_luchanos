@@ -1,4 +1,3 @@
-
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -13,6 +12,7 @@ from hashing import Hasher
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login/token')
 
+
 async def _get_user_by_email_for_auth(email: str, session: AsyncSession):
     async with session.begin():
         user_dal = UserDAL(session)
@@ -22,7 +22,7 @@ async def _get_user_by_email_for_auth(email: str, session: AsyncSession):
 
 
 async def authenticate_user(
-    email: str, password: str, db: AsyncSession,
+        email: str, password: str, db: AsyncSession,
 ) -> User | None:
     user = await _get_user_by_email_for_auth(email=email, session=db)
     if user is None:
@@ -31,8 +31,9 @@ async def authenticate_user(
         return
     return user
 
+
 async def get_current_user_from_token(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db),
+        token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db),
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
