@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from starlette.testclient import TestClient
 
 import settings
-from db.dals import PortalRole
+from db.models import PortalRole
 from db.session import get_db
 from main import app
 from security import create_access_token

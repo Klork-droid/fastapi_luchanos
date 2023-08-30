@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from api.models import ShowUser, UserCreate
+from api.schemas import ShowUser, UserCreate
 from db.dals import PortalRole, UserDAL
 from db.models import User
 from hashing import Hasher
@@ -68,13 +68,11 @@ def check_user_permissions(target_user: User, current_user: User) -> bool:
         # check admin deactivate superadmin attempt
         if (
                 PortalRole.ROLE_PORTAL_SUPERADMIN in target_user.roles
-                and PortalRole.ROLE_PORTAL_ADMIN in current_user.roles
         ):
             return False
         # check admin deactivate admin attempt
         if (
-                PortalRole.ROLE_PORTAL_ADMIN in target_user.roles
-                and PortalRole.ROLE_PORTAL_ADMIN in current_user.roles
+                target_user.roles == current_user.roles
         ):
             return False
     return True
