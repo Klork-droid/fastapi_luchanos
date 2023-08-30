@@ -9,6 +9,7 @@ async def test_create_user(client, get_user_from_database):
         'surname': 'Sviridov',
         'email': 'lol@kek.com',
         'password': 'SamplePass1!',
+        'roles': ['ROLE_PORTAL_USER'],
     }
     resp = client.post('/user/', data=json.dumps(user_data))
     data_from_resp = resp.json()
@@ -33,12 +34,14 @@ async def test_create_user_duplicate_email_error(client, get_user_from_database)
         'surname': 'Sviridov',
         'email': 'lol@kek.com',
         'password': 'SamplePass1!',
+        'roles': ['ROLE_PORTAL_USER'],
     }
     user_data_same = {
         'name': 'Petr',
         'surname': 'Petrov',
         'email': 'lol@kek.com',
         'password': 'SamplePass1!',
+        'roles': ['ROLE_PORTAL_USER'],
     }
     resp = client.post('/user/', data=json.dumps(user_data))
     data_from_resp = resp.json()

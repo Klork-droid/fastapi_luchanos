@@ -6,10 +6,10 @@ select = [
     "B033",
     "C",
     "COM",
-    #    "D100",
-    #    "D101",
-    #    "D102",
-    #    "D103",
+    #        "D100",
+    #        "D101",
+    #        "D102",
+    #        "D103",
     "D208",
     "D209",
     "D300",
@@ -93,14 +93,8 @@ inline-quotes = "single"
 multiline-quotes = "double"
 
 [tool.ruff.per-file-ignores]
-"alembic/*.py" = ["D", "E501"]
-"pymongo_migrations/*.py" = ["D"]
-"shared/db_models/*.py" = ["D", "E501"]
-"shared/flat_quotes_24h/*.py" = ["D", "E501"]
-"providers/xbet/xbet_quote_names.py" = ["E501"]
-"providers/betus/betus_payload.py" = ["E501"]
-"providers/betboom/betboom_graphql_queries.py" = ["E501"]
-"providers/*constants.py" = ["E501"]
+#"alembic/*/*.py" = ["D", "E501"]
+"migrations/*/*.py" = ["D"]
 
 [tool.ruff.isort]
 known-third-party = ["alembic"]

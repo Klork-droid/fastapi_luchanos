@@ -1,16 +1,16 @@
 import asyncio
 import os
-from collections.abc import Generator
 from datetime import timedelta
-from typing import Any
 
 import asyncpg
 import pytest
+from asyncpg import Pool
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from starlette.testclient import TestClient
 
 import settings
+from db.dals import PortalRole
 from db.session import get_db
 from main import app
 from security import create_access_token
@@ -67,7 +67,7 @@ async def _get_test_db():
 
 
 @pytest.fixture(scope='function')
-async def client() -> Generator[TestClient, Any, None]:
+async def client() -> TestClient:
     """
     Create a new FastAPI TestClient that uses the `db_session` fixture to override
     the `get_db` dependency that is injected into routes.
@@ -79,7 +79,7 @@ async def client() -> Generator[TestClient, Any, None]:
 
 
 @pytest.fixture(scope='session')
-async def asyncpg_pool():
+async def asyncpg_pool() -> Pool:
     pool = await asyncpg.create_pool(
         ''.join(settings.TEST_DATABASE_URL.split('+asyncpg')),
     )
@@ -88,7 +88,7 @@ async def asyncpg_pool():
 
 
 @pytest.fixture
-async def get_user_from_database(asyncpg_pool):
+async def get_user_from_database(asyncpg_pool: Pool):
     async def get_user_from_database_by_uuid(user_id: str):
         async with asyncpg_pool.acquire() as connection:
             return await connection.fetch(
@@ -99,7 +99,7 @@ async def get_user_from_database(asyncpg_pool):
 
 
 @pytest.fixture
-async def create_user_in_database(asyncpg_pool):
+async def create_user_in_database(asyncpg_pool: Pool):
     async def create_user_in_database(
             user_id: str,
             name: str,
@@ -107,16 +107,18 @@ async def create_user_in_database(asyncpg_pool):
             email: str,
             is_active: bool,
             hashed_password: str,
+            roles: list[PortalRole],
     ):
         async with asyncpg_pool.acquire() as connection:
             return await connection.execute(
-                """INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6)""",
+                """INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7)""",
                 user_id,
                 name,
                 surname,
                 email,
                 is_active,
                 hashed_password,
+                roles,
             )
 
     return create_user_in_database
